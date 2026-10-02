@@ -10,7 +10,7 @@ router.get('/dashboard', (req, res) => {
   const parentId = req.user.id;
 
   // Look up student(s) linked to this parent via foreign key s.parent_id
-  let student = db.prepare(`
+  const student = db.prepare(`
     SELECT s.*, c.name as class_name, c.department as class_department, c.section, c.year, c.semester,
            u.name as student_name, u.email as student_email, u.phone as student_phone
     FROM students s
@@ -20,20 +20,32 @@ router.get('/dashboard', (req, res) => {
     LIMIT 1
   `).get(parentId);
 
-  // If Admin is viewing or fallback for demo
-  if (!student && req.user.role === 'Admin') {
-    student = db.prepare(`
-      SELECT s.*, c.name as class_name, c.department as class_department, c.section, c.year, c.semester,
-             u.name as student_name, u.email as student_email, u.phone as student_phone
-      FROM students s
-      JOIN users u ON s.user_id = u.id
-      JOIN classes c ON s.class_id = c.id
-      LIMIT 1
-    `).get();
-  }
-
   if (!student) {
-    return res.status(404).json({ error: 'No student linked to this parent account.' });
+    return res.json({
+      parent: {
+        name: req.user.name,
+        username: req.user.username,
+        phone: req.user.phone,
+        email: req.user.email
+      },
+      ward: null,
+      attendance: {
+        percentage: 0,
+        totalPeriods: 0,
+        presentPeriods: 0,
+        onLeavePeriods: 0,
+        absentPeriods: 0,
+        records: []
+      },
+      fees: {
+        total_fee: 0,
+        paid_amount: 0,
+        pending_amount: 0,
+        history: []
+      },
+      permissions: [],
+      notifications: []
+    });
   }
 
   // Attendance history
@@ -50,7 +62,7 @@ router.get('/dashboard', (req, res) => {
   const absentPeriods = attendanceRecords.filter(a => a.status === 'Absent').length;
   const attendancePercentage = totalPeriods > 0 
     ? Math.round(((presentPeriods + onLeavePeriods) / totalPeriods) * 100) 
-    : 100;
+    : 0;
 
   // Fee ledger
   let feeLedger = db.prepare(`
@@ -58,7 +70,7 @@ router.get('/dashboard', (req, res) => {
   `).get(student.id);
 
   if (!feeLedger) {
-    feeLedger = { total_fee: 80000, paid_amount: 0, pending_amount: 80000 };
+    feeLedger = { total_fee: 0, paid_amount: 0, pending_amount: 0 };
   }
 
   const paymentHistory = db.prepare(`

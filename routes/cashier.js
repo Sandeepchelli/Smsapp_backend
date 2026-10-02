@@ -60,7 +60,7 @@ router.get('/student-fee/:studentId', (req, res) => {
   if (!fee) {
     db.prepare(`
       INSERT INTO student_fees (student_id, department, year, semester, total_fee, paid_amount, pending_amount)
-      VALUES (?, ?, ?, ?, 80000, 0, 80000)
+      VALUES (?, ?, ?, ?, 0, 0, 0)
     `).run(studentId, student.department, student.year, student.semester);
     fee = db.prepare(`SELECT * FROM student_fees WHERE student_id = ?`).get(studentId);
   }
@@ -113,7 +113,7 @@ router.post('/payment', (req, res) => {
   if (!fee) {
     db.prepare(`
       INSERT INTO student_fees (student_id, department, year, semester, total_fee, paid_amount, pending_amount)
-      VALUES (?, ?, ?, ?, 80000, 0, 80000)
+      VALUES (?, ?, ?, ?, 0, 0, 0)
     `).run(studentId, student.department, student.year, student.semester);
     fee = db.prepare(`SELECT * FROM student_fees WHERE student_id = ?`).get(studentId);
   }

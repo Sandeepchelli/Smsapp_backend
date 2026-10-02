@@ -48,7 +48,7 @@ router.get('/dashboard', (req, res) => {
   `).get(student.id);
 
   if (!feeLedger) {
-    feeLedger = { total_fee: 80000, paid_amount: 0, pending_amount: 80000 };
+    feeLedger = { total_fee: 0, paid_amount: 0, pending_amount: 0 };
   }
 
   const paymentHistory = db.prepare(`

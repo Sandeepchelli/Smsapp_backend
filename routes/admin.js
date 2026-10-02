@@ -609,7 +609,7 @@ router.get('/students', (req, res) => {
 // POST /api/admin/students - Create new student with atomic Parent creation & linking
 router.post('/students', (req, res) => {
   const {
-    name, username, password, rollNo, classId, email, phone, profilePhoto, totalFee = 80000,
+    name, username, password, rollNo, classId, email, phone, profilePhoto, totalFee = 0,
     parentId, // optional if selecting existing parent
     parentName, parentPhone, parentEmail, parentRelationship, parentUsername, parentPassword, parentProfilePhoto
   } = req.body;

@@ -84,8 +84,8 @@ router.get('/profile', authenticateToken, (req, res) => {
             relation: student.parent_relation || 'Parent / Guardian'
           },
           attendanceRate: percentage,
-          cgpa: gpaData?.cgpa ? Number(gpaData.cgpa).toFixed(2) : '9.20',
-          fees: feeData || { total_fee: 65000, paid_amount: 65000, pending_amount: 0 }
+          cgpa: gpaData?.cgpa ? Number(gpaData.cgpa).toFixed(2) : 'N/A',
+          fees: feeData || { total_fee: 0, paid_amount: 0, pending_amount: 0 }
         };
       }
     } else if (role === 'Parent') {
@@ -134,8 +134,8 @@ router.get('/profile', authenticateToken, (req, res) => {
       `).get(userId);
 
       roleData = {
-        employeeId: user.employee_id || `FAC-${user.id + 100}`,
-        department: user.department || 'Computer Science & Engineering',
+        employeeId: user.employee_id || 'N/A',
+        department: user.department || 'N/A',
         assignments,
         assignedClassesCount: new Set(assignments.map(a => a.class_id)).size,
         assignedSubjectsCount: assignments.length,
@@ -150,7 +150,7 @@ router.get('/profile', authenticateToken, (req, res) => {
       };
 
       roleData = {
-        adminId: user.employee_id || `ADM-${user.id + 1000}`,
+        adminId: user.employee_id || 'PRIN-001',
         privileges: 'Full Administrative Authority (Admissions, Faculty, Academics, Finance, Canteen, Library)',
         systemStats: stats
       };
